@@ -17,10 +17,10 @@ namespace YouTrackSharp
     public class BearerTokenConnection 
         : Connection
     {
+        private bool _authenticated;
         private HttpClient _httpClient;
         private YouTrackClient _youTrackClient;
-        private bool _authenticated;
-        private readonly Dictionary<string, string> _optionalRequestHeaders;
+        private readonly IEnumerable<KeyValuePair<string,string>> _optionalRequestHeaders;
         
         private readonly string _bearerToken;
 
@@ -37,7 +37,7 @@ namespace YouTrackSharp
         /// <exception cref="ArgumentException">
         /// The <paramref name="serverUrl" /> was null, empty  or did not represent a valid, absolute <see cref="T:System.Uri" />.
         /// </exception>
-        public BearerTokenConnection(string serverUrl, string bearerToken, Action<HttpClientHandler> configureHandler = null, Dictionary<string, string> optionalRequestHeaders = null)
+        public BearerTokenConnection(string serverUrl, string bearerToken, Action<HttpClientHandler> configureHandler = null, IEnumerable<KeyValuePair<string,string>> optionalRequestHeaders = null)
             : base(serverUrl)
         {
             _bearerToken = bearerToken;
