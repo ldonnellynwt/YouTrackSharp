@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -19,6 +20,7 @@ namespace YouTrackSharp
         private HttpClient _httpClient;
         private YouTrackClient _youTrackClient;
         private bool _authenticated;
+        private readonly Dictionary<string, string> _optionalRequestHeaders;
         
         private readonly string _bearerToken;
 
@@ -35,13 +37,14 @@ namespace YouTrackSharp
         /// <exception cref="ArgumentException">
         /// The <paramref name="serverUrl" /> was null, empty  or did not represent a valid, absolute <see cref="T:System.Uri" />.
         /// </exception>
-        public BearerTokenConnection(string serverUrl, string bearerToken, Action<HttpClientHandler> configureHandler = null)
+        public BearerTokenConnection(string serverUrl, string bearerToken, Action<HttpClientHandler> configureHandler = null, Dictionary<string, string> optionalRequestHeaders = null)
             : base(serverUrl)
         {
             _bearerToken = bearerToken;
             _configureHandler = configureHandler;
+            _optionalRequestHeaders = optionalRequestHeaders;
         }
-        
+
         /// <summary>
         /// Gets or sets the timespan to wait before the request times out.
         /// </summary>
@@ -89,6 +92,12 @@ namespace YouTrackSharp
                     BaseAddress = ServerUri,
                     Timeout = _timeout
                 };
+
+                if (_optionalRequestHeaders != null) {
+                    foreach(var optionalRequestHeader in _optionalRequestHeaders) {
+                        _httpClient.DefaultRequestHeaders.Add(optionalRequestHeader.Key, optionalRequestHeader.Value);
+                    }
+                }
 
                 _youTrackClient = new YouTrackClient(_httpClient);
             }
